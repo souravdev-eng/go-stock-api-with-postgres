@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"github.com/souravdev-eng/go-postgres-stock/models"
 )
 
@@ -147,7 +148,7 @@ func getStock(id int64) (models.Stock, error) {
 	sqlStatement := `SELECT * FROM stocks WHERE stockid=$1`
 
 	row := db.QueryRow(sqlStatement, id)
-	err := row.Scan(&stock.Name, &stock.Price, &stock.Company)
+	err := row.Scan(&stock.StockID, &stock.Name, &stock.Price, &stock.Company)
 
 	switch err {
 	case sql.ErrNoRows:
@@ -201,7 +202,7 @@ func deleteStock(id int64) int64 {
 	db := createConnection()
 	defer db.Close()
 
-	sqlStatement := `DELETE stocks WHERE stockid=$1`
+	sqlStatement := `DELETE FROM stocks WHERE stockid=$1`
 
 	res, err := db.Exec(sqlStatement, id)
 	HandelError("Unable to execute the query %v", err)
